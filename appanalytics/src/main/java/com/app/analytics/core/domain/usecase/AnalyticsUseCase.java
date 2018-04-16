@@ -1,6 +1,8 @@
 package com.app.analytics.core.domain.usecase;
 
 
+import android.util.Log;
+
 import com.app.analytics.core.base.BaseUseCase;
 import com.app.analytics.core.data.repository.AppDataRepositoryImpl;
 import com.app.analytics.core.domain.abstraction.AppDataRepository;
@@ -34,7 +36,7 @@ public class AnalyticsUseCase extends BaseUseCase<String> {
 
 
         AnalyticsIDType analyticsIDType = (AnalyticsIDType) objectKey;
-
+        Log.i(TAG, TAG + analyticsIDType + ": " + analyticsIDType);
         switch (analyticsIDType) {
             case SESSION_TOKEN:
                 return appDataRepositoryImpl.requestSessionToken();

@@ -7,8 +7,6 @@ public interface AnalyticsInfo {
 
     String getSessionToken();
 
-    String getBearerToken();
-
     String getUUIDRepository();
 
     String getDeviceTypeRepository();

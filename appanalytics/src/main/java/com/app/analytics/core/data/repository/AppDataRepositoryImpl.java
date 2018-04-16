@@ -44,7 +44,7 @@ public class AppDataRepositoryImpl implements AppDataRepository {
     public Observable<Boolean> checkAndUpdateSessionToken() {
 
         if (isSessionTokenEmpty() || isSessionTokenTimeout()) {
-            if (requestSessionToken() != null && this.sharedPreferences.getString(AppConstants.SESSION_TOKEN, "").trim().length() != 0) {
+            if (requestSessionToken() != null) {
                 return Observable.just(true);
             } else
                 return Observable.just(false);

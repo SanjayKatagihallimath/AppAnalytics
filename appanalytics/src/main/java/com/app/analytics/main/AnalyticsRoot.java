@@ -77,11 +77,6 @@ public class AnalyticsRoot implements AnalyticsInfo {
     }
 
     @Override
-    public String getBearerToken() {
-        return null;
-    }
-
-    @Override
     public String getUUIDRepository() {
         return sharedPreferences.getString(AppConstants.UUID, "");
     }
@@ -138,41 +133,49 @@ public class AnalyticsRoot implements AnalyticsInfo {
             switch (analyticsIDType) {
 
                 case UUID:
-
-                    sharedPreferencesEditor.putString(AppConstants.UUID, ((String) object).trim());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.UUID, ((String) object).trim());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case DEVICE_ID:
-
-                    sharedPreferencesEditor.putString(AppConstants.DEVICE_ID, ((String) object).trim());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.DEVICE_ID, ((String) object).trim());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case TRACKING_SESSION_ID:
-
-                    sharedPreferencesEditor.putString(AppConstants.TRACKING_SESSION_ID, ((String) object).trim());
-                    sharedPreferencesEditor.putLong(AppConstants.TRACKING_SESSION_ID_LAST_UPDATED, System.currentTimeMillis());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.TRACKING_SESSION_ID, ((String) object).trim());
+                        sharedPreferencesEditor.putLong(AppConstants.TRACKING_SESSION_ID_LAST_UPDATED, System.currentTimeMillis());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case SUB_SESSION_ID:
-
-                    sharedPreferencesEditor.putString(AppConstants.SUB_SESSION_ID, ((String) object).trim());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.SUB_SESSION_ID, ((String) object).trim());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case TIMEZONE:
-
-                    sharedPreferencesEditor.putString(AppConstants.TIMEZONE, ((String) object).trim());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.TIMEZONE, ((String) object).trim());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case USERAGENT:
-
-                    sharedPreferencesEditor.putString(AppConstants.USERAGENT, ((String) object).trim());
-                    sharedPreferencesEditor.apply();
+                    if (object instanceof String) {
+                        sharedPreferencesEditor.putString(AppConstants.USERAGENT, ((String) object).trim());
+                        sharedPreferencesEditor.apply();
+                    }
                     break;
                 case IP_ADDRESS:
                     try {
-                        JSONObject jsonObject = new JSONObject(((String) object).trim());
-                        sharedPreferencesEditor.putString(AppConstants.IP, jsonObject.getString(AppConstants.IP));
-                        sharedPreferencesEditor.apply();
+                        if (object instanceof String) {
+                            JSONObject jsonObject = new JSONObject(((String) object).trim());
+                            sharedPreferencesEditor.putString(AppConstants.IP, jsonObject.getString(AppConstants.IP));
+                            sharedPreferencesEditor.apply();
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
