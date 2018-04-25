@@ -21,6 +21,6 @@ public interface AnalyticsInfo {
 
     String getUserAgentRepository();
 
-    String postEvent(AnalyticEvent analyticEvent);
+    void  postEvent(AnalyticEvent analyticEvent);
 
 }

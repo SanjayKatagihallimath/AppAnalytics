@@ -1,6 +1,6 @@
 package com.app.analytics.core.domain.model;
 
-import com.app.analytics.utils.AppConstants;
+import com.app.analytics.utils.AnalyticsAppConstants;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -42,11 +42,11 @@ public class AnalyticEvent {
     @Expose
     public String ProgressMarker;
 
-    @SerializedName(AppConstants.SUB_SESSION_ID)
+    @SerializedName(AnalyticsAppConstants.SUB_SESSION_ID)
     @Expose
     public String SubSessionId;
 
-    @SerializedName(AppConstants.TRACKING_SESSION_ID)
+    @SerializedName(AnalyticsAppConstants.TRACKING_SESSION_ID)
     @Expose
     public String TrackingSessionId;
 
@@ -54,7 +54,7 @@ public class AnalyticEvent {
     @Expose
     public String Referral_code;
 
-    @SerializedName(AppConstants.DEVICE_ID)
+    @SerializedName(AnalyticsAppConstants.DEVICE_ID)
     @Expose
     public String DeviceId;
 
@@ -70,7 +70,7 @@ public class AnalyticEvent {
     @Expose
     public String TimeStamp;
 
-    @SerializedName(AppConstants.TIMEZONE)
+    @SerializedName(AnalyticsAppConstants.TIMEZONE)
     @Expose
     public String TimeZone;
 
@@ -78,7 +78,7 @@ public class AnalyticEvent {
     @Expose
     public String UserAgent;
 
-    @SerializedName(AppConstants.IP_ADDRESS)
+    @SerializedName(AnalyticsAppConstants.IP_ADDRESS)
     @Expose
     public String IpAddress;
 

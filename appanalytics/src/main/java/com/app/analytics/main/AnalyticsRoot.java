@@ -11,7 +11,7 @@ import com.app.analytics.core.domain.model.AnalyticEvent;
 import com.app.analytics.core.domain.model.AnalyticsIDType;
 import com.app.analytics.core.domain.usecase.AnalyticsEventsUseCase;
 import com.app.analytics.core.domain.usecase.AnalyticsUseCase;
-import com.app.analytics.utils.AppConstants;
+import com.app.analytics.utils.AnalyticsAppConstants;
 import com.app.analytics.utils.ServiceUtil;
 
 import org.json.JSONException;
@@ -43,12 +43,12 @@ public class AnalyticsRoot implements AnalyticsInfo {
 
     private void init() {
 
+        sharedPreferences = context.getApplicationContext().getSharedPreferences(AnalyticsAppConstants.PREFERENCES_FILE, Context.MODE_PRIVATE);
+        this.sharedPreferencesEditor = sharedPreferences.edit();
+
         retrofit = new ServiceUtil().retrofitProductionHTTP(context);
         retrofitAnalytics = new ServiceUtil().retrofitFUUIDS(context);
-        sharedPreferences = context.getApplicationContext().getSharedPreferences(AppConstants.PREFERENCES_FILE, Context.MODE_PRIVATE);
-        this.sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putString(AppConstants.IP, "-1");
-        sharedPreferencesEditor.apply();
+
         appDataService = retrofit.create(AppDataService.class);
         appAnalyticsDataService = retrofitAnalytics.create(AppDataService.class);
         appDataSourceNetworkImpl = new AppDataSourceNetworkImpl(appDataService, appAnalyticsDataService, sharedPreferences);
@@ -59,7 +59,8 @@ public class AnalyticsRoot implements AnalyticsInfo {
 
 
     public void initData() {
-
+        sharedPreferencesEditor.putString(AnalyticsAppConstants.IP, "-1");
+        sharedPreferencesEditor.apply();
         //analyticsUseCase.executeWithObserver(new AppObserver(AnalyticsIDType.SESSION_TOKEN), AnalyticsIDType.SESSION_TOKEN);
         analyticsUseCase.executeWithObserver(new AppObserver(AnalyticsIDType.UUID), AnalyticsIDType.UUID);
         analyticsUseCase.executeWithObserver(new AppObserver(AnalyticsIDType.DEVICE_ID), AnalyticsIDType.DEVICE_ID);
@@ -73,47 +74,47 @@ public class AnalyticsRoot implements AnalyticsInfo {
 
     @Override
     public String getSessionToken() {
-        return sharedPreferences.getString(AppConstants.SESSION_TOKEN, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.SESSION_TOKEN, "");
     }
 
     @Override
     public String getUUIDRepository() {
-        return sharedPreferences.getString(AppConstants.UUID, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.UUID, "");
     }
 
     @Override
     public String getDeviceTypeRepository() {
-        return sharedPreferences.getString(AppConstants.DEVICE_ID, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.DEVICE_ID, "");
     }
 
     @Override
     public String getTrackingSessionIDRepository() {
-        return sharedPreferences.getString(AppConstants.TRACKING_SESSION_ID, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.TRACKING_SESSION_ID, "");
     }
 
     @Override
     public String getSubSessionIDRepository() {
-        return sharedPreferences.getString(AppConstants.SUB_SESSION_ID, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.SUB_SESSION_ID, "");
     }
 
     @Override
     public String getTimeZoneRepository() {
-        return sharedPreferences.getString(AppConstants.TIMEZONE, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.TIMEZONE, "");
     }
 
     @Override
     public String getIPAddressRepository() {
-        return sharedPreferences.getString(AppConstants.IP_ADDRESS, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.IP_ADDRESS, "");
     }
 
     @Override
     public String getUserAgentRepository() {
-        return sharedPreferences.getString(AppConstants.USERAGENT, "");
+        return sharedPreferences.getString(AnalyticsAppConstants.USERAGENT, "");
     }
 
     @Override
-    public String postEvent(AnalyticEvent analyticEvent) {
-        return analyticsEventsUseCase.execute(analyticEvent).blockingSingle();
+    public void postEvent(AnalyticEvent analyticEvent) {
+        analyticsEventsUseCase.execute(new EventObserver(analyticEvent.EventName), analyticEvent);
     }
 
 
@@ -134,38 +135,38 @@ public class AnalyticsRoot implements AnalyticsInfo {
 
                 case UUID:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.UUID, ((String) object).trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.UUID, ((String) object).trim());
                         sharedPreferencesEditor.apply();
                     }
                     break;
                 case DEVICE_ID:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.DEVICE_ID, ((String) object).trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.DEVICE_ID, ((String) object).trim());
                         sharedPreferencesEditor.apply();
                     }
                     break;
                 case TRACKING_SESSION_ID:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.TRACKING_SESSION_ID, ((String) object).trim());
-                        sharedPreferencesEditor.putLong(AppConstants.TRACKING_SESSION_ID_LAST_UPDATED, System.currentTimeMillis());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.TRACKING_SESSION_ID, ((String) object).trim());
+                        sharedPreferencesEditor.putLong(AnalyticsAppConstants.TRACKING_SESSION_ID_LAST_UPDATED, System.currentTimeMillis());
                         sharedPreferencesEditor.apply();
                     }
                     break;
                 case SUB_SESSION_ID:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.SUB_SESSION_ID, ((String) object).trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.SUB_SESSION_ID, ((String) object).trim());
                         sharedPreferencesEditor.apply();
                     }
                     break;
                 case TIMEZONE:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.TIMEZONE, ((String) object).trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.TIMEZONE, ((String) object).trim());
                         sharedPreferencesEditor.apply();
                     }
                     break;
                 case USERAGENT:
                     if (object instanceof String) {
-                        sharedPreferencesEditor.putString(AppConstants.USERAGENT, ((String) object).trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.USERAGENT, ((String) object).trim());
                         sharedPreferencesEditor.apply();
                     }
                     break;
@@ -173,7 +174,7 @@ public class AnalyticsRoot implements AnalyticsInfo {
                     try {
                         if (object instanceof String) {
                             JSONObject jsonObject = new JSONObject(((String) object).trim());
-                            sharedPreferencesEditor.putString(AppConstants.IP, jsonObject.getString(AppConstants.IP));
+                            sharedPreferencesEditor.putString(AnalyticsAppConstants.IP, jsonObject.getString(AnalyticsAppConstants.IP));
                             sharedPreferencesEditor.apply();
                         }
                     } catch (JSONException e) {
@@ -188,6 +189,31 @@ public class AnalyticsRoot implements AnalyticsInfo {
         @Override
         public void onError(Throwable e) {
             Log.i(TAG, TAG + analyticsIDType + ": " + e.getMessage());
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    }
+
+    class EventObserver extends DisposableObserver<String> {
+
+        private String eventName;
+
+        public EventObserver(String eventName) {
+            this.eventName = eventName;
+        }
+
+        @Override
+        public void onNext(String value) {
+
+            Log.i(TAG, TAG + eventName + value);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.i(TAG, TAG + eventName + e.getMessage());
         }
 
         @Override

@@ -3,7 +3,7 @@ package com.app.analytics.core.base;
 import android.util.Log;
 
 import com.app.analytics.core.domain.abstraction.AppDataRepository;
-import com.app.analytics.utils.AppConstants;
+import com.app.analytics.utils.AnalyticsAppConstants;
 import com.app.analytics.utils.CustomHttpException;
 import com.app.analytics.utils.NetworkUtil;
 
@@ -112,7 +112,7 @@ public abstract class BaseUseCase<T> implements BaseInteractor<T> {
 
             int errorCode = (throwable instanceof HttpException) ? ((HttpException) throwable).code() : ((CustomHttpException) throwable).getCode();
             String url = (throwable instanceof HttpException) ? ((HttpException) throwable).response().raw().request().url().toString() : ((CustomHttpException) throwable).getUrl();
-            String uuid = (throwable instanceof HttpException) ? ((HttpException) throwable).response().raw().header(AppConstants.UUID, AppConstants.UUID_DEFAULT_VALUE) : ((CustomHttpException) throwable).getUuid();
+            String uuid = (throwable instanceof HttpException) ? ((HttpException) throwable).response().raw().header(AnalyticsAppConstants.UUID, AnalyticsAppConstants.UUID_DEFAULT_VALUE) : ((CustomHttpException) throwable).getUuid();
 
             /*Initiate Flambe Analytics Error Event. Required: errorCode, requestUrl, uuid*/
 
@@ -137,11 +137,11 @@ public abstract class BaseUseCase<T> implements BaseInteractor<T> {
         try {
             String responseBody = (throwable instanceof HttpException) ? NetworkUtil.convertInputStreamToString(((HttpException) throwable).response().errorBody().byteStream()) : ((CustomHttpException) throwable).getType();
 
-            if (responseBody.equals(AppConstants.FABRIC)) {
+            if (responseBody.equals(AnalyticsAppConstants.FABRIC)) {
 
                 // this is the error we care about - to trigger a retry we need to emit anything other than onError or onCompleted
                 return Observable.just((T) new Object());
-            } else if (responseBody.equals(AppConstants.USER)) {
+            } else if (responseBody.equals(AnalyticsAppConstants.USER)) {
 
                 // this is the error we care about - to trigger a retry we need to emit anything other than onError or onCompleted
                 return Observable.just((T) appDataRepository.checkAndUpdateBearerToken());

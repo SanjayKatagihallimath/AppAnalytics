@@ -38,8 +38,6 @@ public class AnalyticsUseCase extends BaseUseCase<String> {
         AnalyticsIDType analyticsIDType = (AnalyticsIDType) objectKey;
         Log.i(TAG, TAG + analyticsIDType + ": " + analyticsIDType);
         switch (analyticsIDType) {
-            case SESSION_TOKEN:
-                return appDataRepositoryImpl.requestSessionToken();
             case UUID:
                 return appDataRepositoryImpl.getUUIDRepository();
 

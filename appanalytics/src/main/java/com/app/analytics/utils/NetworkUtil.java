@@ -37,7 +37,7 @@ public class NetworkUtil {
     public static String getUUID(Header[] headers) {
 
         for (Header header : headers) {
-            if (header.getName().trim().equalsIgnoreCase(AppConstants.UUID)) {
+            if (header.getName().trim().equalsIgnoreCase(AnalyticsAppConstants.UUID)) {
                 return header.getValue().toString().trim();
             }
         }

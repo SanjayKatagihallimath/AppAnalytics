@@ -6,13 +6,15 @@ import android.util.Log;
 import com.app.analytics.core.data.datasource.network.AppDataSourceNetworkImpl;
 import com.app.analytics.core.domain.abstraction.AppDataRepository;
 import com.app.analytics.core.domain.model.AnalyticEvent;
-import com.app.analytics.utils.AppConstants;
+import com.app.analytics.core.domain.model.Token;
+import com.app.analytics.utils.AnalyticsAppConstants;
 
 import org.apache.http.Header;
 
 import java.net.HttpURLConnection;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 import retrofit2.Response;
 
 /**
@@ -44,10 +46,9 @@ public class AppDataRepositoryImpl implements AppDataRepository {
     public Observable<Boolean> checkAndUpdateSessionToken() {
 
         if (isSessionTokenEmpty() || isSessionTokenTimeout()) {
-            if (requestSessionToken() != null) {
-                return Observable.just(true);
-            } else
-                return Observable.just(false);
+
+            return requestSessionToken();
+
         } else {
             return Observable.just(true);
         }
@@ -60,15 +61,15 @@ public class AppDataRepositoryImpl implements AppDataRepository {
 
     private Boolean isSessionTokenEmpty() {
 
-        return this.sharedPreferences.getString(AppConstants.SESSION_TOKEN, "").trim().length() == 0;
+        return this.sharedPreferences.getString(AnalyticsAppConstants.SESSION_TOKEN, "").trim().length() == 0;
     }
 
     private Boolean isSessionTokenTimeout() {
 
         long currentTimeMillis = System.currentTimeMillis();
-        long sessionTokenLastUpdateTime = this.sharedPreferences.getLong(AppConstants.SESSION_TOKEN_LAST_UPDATED, 0);
+        long sessionTokenLastUpdateTime = this.sharedPreferences.getLong(AnalyticsAppConstants.SESSION_TOKEN_LAST_UPDATED, 0);
 
-        if ((currentTimeMillis > sessionTokenLastUpdateTime) && ((currentTimeMillis - sessionTokenLastUpdateTime) > AppConstants.SESSION_TOKEN_EXPIRE_DURATION_IN_MILLIS)) {
+        if ((currentTimeMillis > sessionTokenLastUpdateTime) && ((currentTimeMillis - sessionTokenLastUpdateTime) > AnalyticsAppConstants.SESSION_TOKEN_EXPIRE_DURATION_IN_MILLIS)) {
             Log.d(TAG, "SessionTokenTimeOut: true");
             return true;
         }
@@ -76,25 +77,27 @@ public class AppDataRepositoryImpl implements AppDataRepository {
         return false;
     }
 
-    public Observable<String> requestSessionToken() {
+    public Observable<Boolean> requestSessionToken() {
 
-        return appDataSourceNetwork.requestSessionToken().map(token -> {
+        return appDataSourceNetwork.requestSessionToken().map(new Function<Token, Boolean>() {
+            @Override
+            public Boolean apply(Token token) throws Exception {
 
-            if (token.code == HttpURLConnection.HTTP_NO_CONTENT) {
-                for (Header header : token.headers) {
-                    if (header.getName().trim().equalsIgnoreCase(AppConstants.SESSION_TOKEN)) {
+                if (token.code == HttpURLConnection.HTTP_NO_CONTENT) {
+                    for (Header header : token.headers) {
+                        if (header.getName().trim().equalsIgnoreCase(AnalyticsAppConstants.SESSION_TOKEN)) {
 
-                        Log.d(TAG, "Session Token: " + header.getValue().trim());
-                        sharedPreferencesEditor.putString(AppConstants.SESSION_TOKEN, header.getValue().trim());
-                        sharedPreferencesEditor.putLong(AppConstants.SESSION_TOKEN_LAST_UPDATED, System.currentTimeMillis());
-                        sharedPreferencesEditor.commit();
-                        return header.getValue().trim();
-
+                            Log.d(TAG, "Session Token: " + header.getValue().trim());
+                            sharedPreferencesEditor.putString(AnalyticsAppConstants.SESSION_TOKEN, header.getValue().trim());
+                            sharedPreferencesEditor.putLong(AnalyticsAppConstants.SESSION_TOKEN_LAST_UPDATED, System.currentTimeMillis());
+                            sharedPreferencesEditor.commit();
+                            break;
+                        }
                     }
+                    return true;
                 }
-                return this.sharedPreferences.getString(AppConstants.SESSION_TOKEN, "").trim();
+                return false;
             }
-            return null;
         });
     }
 
@@ -104,10 +107,10 @@ public class AppDataRepositoryImpl implements AppDataRepository {
 
             if (token.code == HttpURLConnection.HTTP_OK) {
                 for (Header header : token.headers) {
-                    if (header.getName().trim().equalsIgnoreCase(AppConstants.AUTHORIZATION)) {
+                    if (header.getName().trim().equalsIgnoreCase(AnalyticsAppConstants.AUTHORIZATION)) {
 
                         Log.d(TAG, "Bearer Token: " + header.getValue().trim());
-                        sharedPreferencesEditor.putString(AppConstants.AUTHORIZATION, header.getValue().trim());
+                        sharedPreferencesEditor.putString(AnalyticsAppConstants.AUTHORIZATION, header.getValue().trim());
                         sharedPreferencesEditor.commit();
                         break;
                     }

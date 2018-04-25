@@ -78,7 +78,7 @@ public class CustomHttpException extends Exception {
 
         this.headers = null;
         this.okHttp3Headers = response.raw().headers();
-        this.uuid = (okHttp3Headers.get(AppConstants.UUID) != null) ? okHttp3Headers.get(AppConstants.UUID) : "-1";
+        this.uuid = (okHttp3Headers.get(AnalyticsAppConstants.UUID) != null) ? okHttp3Headers.get(AnalyticsAppConstants.UUID) : "-1";
 
         try {
             this.type = NetworkUtil.convertInputStreamToString(response.errorBody().byteStream());

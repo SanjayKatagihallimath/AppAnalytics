@@ -56,11 +56,11 @@ public class ServiceUtil {
 
 
     public Cache cache(File cacheFile) {
-        return new Cache(cacheFile, AppConstants.cache_size);
+        return new Cache(cacheFile, AnalyticsAppConstants.cache_size);
     }
 
     public File cacheFile(Context context) {
-        return new File(context.getCacheDir(), AppConstants.ok_http_cache);
+        return new File(context.getCacheDir(), AnalyticsAppConstants.ok_http_cache);
     }
 
     public OkHttpClient.Builder okHttpClientBuilder(Context context) {
@@ -68,9 +68,9 @@ public class ServiceUtil {
         return new OkHttpClient.Builder()
                 .addInterceptor(httpLoggingInterceptor())
                 .cache(cache(cacheFile(context)))
-                .connectTimeout(AppConstants.ok_http_timeout, TimeUnit.SECONDS)
-                .writeTimeout(AppConstants.ok_http_timeout, TimeUnit.SECONDS)
-                .readTimeout(AppConstants.ok_http_timeout, TimeUnit.SECONDS);
+                .connectTimeout(AnalyticsAppConstants.ok_http_timeout, TimeUnit.SECONDS)
+                .writeTimeout(AnalyticsAppConstants.ok_http_timeout, TimeUnit.SECONDS)
+                .readTimeout(AnalyticsAppConstants.ok_http_timeout, TimeUnit.SECONDS);
     }
 
     public OkHttpClient okHttpClient(Context context) {

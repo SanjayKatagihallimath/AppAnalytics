@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.app.analytics.core.domain.model.AnalyticEvent;
 import com.app.analytics.core.domain.model.Token;
+import com.app.analytics.utils.AnalyticsAppConstants;
 import com.app.analytics.utils.ApiConstants;
-import com.app.analytics.utils.AppConstants;
 import com.app.analytics.utils.CustomHttpException;
 import com.google.gson.Gson;
 
@@ -48,7 +48,7 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
     @Override
     public Observable<Response<Void>> getSessionToken() {
 
-        return appDataService.getSessionToken(AppConstants.authToken);
+        return appDataService.getSessionToken(AnalyticsAppConstants.authToken);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
             try {
                 Log.d(TAG, "Session Token HttpClient Request.");
                 HttpPost httpPost = new HttpPost(ApiConstants.SESSION_TOKEN_URL);
-                httpPost.setEntity(new StringEntity(AppConstants.authToken));
+                httpPost.setEntity(new StringEntity(AnalyticsAppConstants.authToken));
                 httpPost.setHeader(ApiConstants.CONTENT_TYPE, ApiConstants.CONTENT_TYPE_FORMAT_TEXT_PLAIN);
                 httpPost.setHeader(ApiConstants.ACCEPT_TYPE, ApiConstants.ACCEPT_TYPE_FORMAT_V4_JSON);
 
@@ -80,8 +80,8 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
 
                 httpGet.setHeader(ApiConstants.CONTENT_TYPE, ApiConstants.CONTENT_TYPE_FORMAT_TEXT_PLAIN + "," + ApiConstants.ACCEPT_TYPE_FORMAT_JSON);
                 httpGet.setHeader(ApiConstants.ACCEPT_TYPE, ApiConstants.ACCEPT_TYPE_FORMAT_JSON + "," + ApiConstants.ACCEPT_TYPE_FORMAT_XML);
-                httpGet.setHeader(ApiConstants.SESSION_TOKEN, sharedPreferences.getString(AppConstants.SESSION_TOKEN, ""));
-                httpGet.setHeader(AppConstants.VIMOND_COOKIE, sharedPreferences.getString(AppConstants.VIMOND_COOKIE, ""));
+                httpGet.setHeader(ApiConstants.SESSION_TOKEN, sharedPreferences.getString(AnalyticsAppConstants.SESSION_TOKEN, ""));
+                httpGet.setHeader(AnalyticsAppConstants.VIMOND_COOKIE, sharedPreferences.getString(AnalyticsAppConstants.VIMOND_COOKIE, ""));
 
                 DefaultHttpClient httpClient = new DefaultHttpClient(httpGet.getParams());
                 emitResponse(ApiConstants.AUTHORIZATION_TOKEN_URL, httpClient.execute(httpGet), emitter);
@@ -148,11 +148,11 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
     @Override
     public Observable<String> getUserAgent() {
 
-        String UserAgent = AppConstants.DEVICE_INFO
-                + AppConstants.OS_VERSION + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")"
-                + AppConstants.OS_API_LEVEL + android.os.Build.VERSION.RELEASE + "(" + android.os.Build.VERSION.SDK_INT + ")"
-                + AppConstants.MANUFACTURER + Build.MANUFACTURER
-                + AppConstants.MODEL_PRODUCT + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")";
+        String UserAgent = AnalyticsAppConstants.DEVICE_INFO
+                + AnalyticsAppConstants.OS_VERSION + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")"
+                + AnalyticsAppConstants.OS_API_LEVEL + android.os.Build.VERSION.RELEASE + "(" + android.os.Build.VERSION.SDK_INT + ")"
+                + AnalyticsAppConstants.MANUFACTURER + Build.MANUFACTURER
+                + AnalyticsAppConstants.MODEL_PRODUCT + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")";
 
         return Observable.just(UserAgent);
     }
@@ -165,21 +165,21 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
     @Override
     public Observable<String> postEvent(AnalyticEvent analyticEvent) {
 
-        analyticEvent.SubSessionId = sharedPreferences.getString(AppConstants.SUB_SESSION_ID, AppConstants.SUB_SESSION_ID);
-        analyticEvent.TrackingSessionId = sharedPreferences.getString(AppConstants.TRACKING_SESSION_ID, AppConstants.TRACKING_SESSION_ID);
-        analyticEvent.DeviceId = sharedPreferences.getString(AppConstants.DEVICE_ID, AppConstants.DEVICE_ID);
-        analyticEvent.AppType = AppConstants.ANDROID + AppConstants.APP;
+        analyticEvent.SubSessionId = sharedPreferences.getString(AnalyticsAppConstants.SUB_SESSION_ID, AnalyticsAppConstants.SUB_SESSION_ID);
+        analyticEvent.TrackingSessionId = sharedPreferences.getString(AnalyticsAppConstants.TRACKING_SESSION_ID, AnalyticsAppConstants.TRACKING_SESSION_ID);
+        analyticEvent.DeviceId = sharedPreferences.getString(AnalyticsAppConstants.DEVICE_ID, AnalyticsAppConstants.DEVICE_ID);
+        analyticEvent.AppType = AnalyticsAppConstants.ANDROID + AnalyticsAppConstants.APP;
         analyticEvent.TimeStamp = String.valueOf(System.currentTimeMillis());
-        analyticEvent.TimeZone = sharedPreferences.getString(AppConstants.TIMEZONE, Integer.toString(TimeZone.getDefault().getOffset(new Date().getTime()) / 60000));
-        analyticEvent.UserAgent = sharedPreferences.getString(AppConstants.USERAGENT, AppConstants.USERAGENT);
-        analyticEvent.IpAddress = sharedPreferences.getString(AppConstants.IP, AppConstants.IP);
-        analyticEvent.AppId = AppConstants.WATCHABLE;
-        analyticEvent.IsProduction = AppConstants.IS_PRODUCTION_ANALYTICS;
+        analyticEvent.TimeZone = sharedPreferences.getString(AnalyticsAppConstants.TIMEZONE, Integer.toString(TimeZone.getDefault().getOffset(new Date().getTime()) / 60000));
+        analyticEvent.UserAgent = sharedPreferences.getString(AnalyticsAppConstants.USERAGENT, AnalyticsAppConstants.USERAGENT);
+        analyticEvent.IpAddress = sharedPreferences.getString(AnalyticsAppConstants.IP, AnalyticsAppConstants.IP);
+        analyticEvent.AppId = AnalyticsAppConstants.WATCHABLE;
+        analyticEvent.IsProduction = AnalyticsAppConstants.IS_PRODUCTION_ANALYTICS;
         analyticEvent.DeviceType = Build.MANUFACTURER;
-        analyticEvent.ReportFrom = AppConstants.ANDROID + AppConstants.APP;
+        analyticEvent.ReportFrom = AnalyticsAppConstants.ANDROID + AnalyticsAppConstants.APP;
         analyticEvent.ZipCode = "-1";
         analyticEvent.UserId = "-1";
-        if (analyticEvent.EventName.equalsIgnoreCase(AppConstants.APP_START))
+        if (analyticEvent.EventName.equalsIgnoreCase(AnalyticsAppConstants.APP_START))
             analyticEvent.Referral_code = "-1";
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse(ApiConstants.ACCEPT_TYPE_FORMAT_JSON + ";" + ApiConstants.CHARSET), new Gson().toJson(analyticEvent));

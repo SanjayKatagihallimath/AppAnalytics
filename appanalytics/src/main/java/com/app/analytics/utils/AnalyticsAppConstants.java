@@ -1,6 +1,6 @@
 package com.app.analytics.utils;
 
-public class AppConstants {
+public class AnalyticsAppConstants {
 
     /*Integer Constants*/
     public static final Integer cache_size = 10 * 1000 * 1000; // 10 MB
