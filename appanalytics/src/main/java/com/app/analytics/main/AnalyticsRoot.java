@@ -25,14 +25,13 @@ public class AnalyticsRoot implements AnalyticsInfo {
     public static final String TAG = AnalyticsRoot.class.getSimpleName();
 
     private Context context;
-    private Retrofit retrofit, retrofitAnalytics;
+
     private SharedPreferences sharedPreferences;
     private AnalyticsUseCase analyticsUseCase;
     private AnalyticsEventsUseCase analyticsEventsUseCase;
     private AppDataRepositoryImpl appDataRepositoryImpl;
     private AppDataSourceNetworkImpl appDataSourceNetworkImpl;
     private AppDataService appDataService, appAnalyticsDataService;
-
     private SharedPreferences.Editor sharedPreferencesEditor;
 
     public AnalyticsRoot(Context context) {
@@ -46,12 +45,7 @@ public class AnalyticsRoot implements AnalyticsInfo {
         sharedPreferences = context.getApplicationContext().getSharedPreferences(AnalyticsAppConstants.PREFERENCES_FILE, Context.MODE_PRIVATE);
         this.sharedPreferencesEditor = sharedPreferences.edit();
 
-        retrofit = new ServiceUtil().retrofitProductionHTTP(context);
-        retrofitAnalytics = new ServiceUtil().retrofitFAS(context);
-
-        appDataService = retrofit.create(AppDataService.class);
-        appAnalyticsDataService = retrofitAnalytics.create(AppDataService.class);
-        appDataSourceNetworkImpl = new AppDataSourceNetworkImpl(appDataService, appAnalyticsDataService, sharedPreferences);
+        appDataSourceNetworkImpl = new AppDataSourceNetworkImpl(context, sharedPreferences);
         appDataRepositoryImpl = new AppDataRepositoryImpl(sharedPreferences, appDataSourceNetworkImpl);
         analyticsUseCase = new AnalyticsUseCase(appDataRepositoryImpl);
         analyticsEventsUseCase = new AnalyticsEventsUseCase(appDataRepositoryImpl);

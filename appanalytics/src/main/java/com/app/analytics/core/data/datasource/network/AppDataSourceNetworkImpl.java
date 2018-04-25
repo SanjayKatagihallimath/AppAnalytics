@@ -1,5 +1,6 @@
 package com.app.analytics.core.data.datasource.network;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
@@ -9,6 +10,7 @@ import com.app.analytics.core.domain.model.Token;
 import com.app.analytics.utils.AnalyticsAppConstants;
 import com.app.analytics.utils.ApiConstants;
 import com.app.analytics.utils.CustomHttpException;
+import com.app.analytics.utils.ServiceUtil;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpEntity;
@@ -27,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import okhttp3.RequestBody;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Created by Sanjay.k on 4/1/2017.
@@ -35,20 +38,29 @@ import retrofit2.Response;
 public class AppDataSourceNetworkImpl implements AppDataSource {
     public static final String TAG = AppDataSourceNetworkImpl.class.getSimpleName();
 
-    private final AppDataService appDataService,appAnalyticsDataService;
+    Retrofit retrofitHTTP, retrofitFUUIDS, retrofitFAS, retrofitIP;
+    private final AppDataService appDataServiceHTTP, appDataServiceFUUIDS, appDataServiceFAS, appDataServiceIP;
     private final SharedPreferences sharedPreferences;
 
-    public AppDataSourceNetworkImpl(AppDataService appDataService,AppDataService appAnalyticsDataService, SharedPreferences sharedPreferences) {
+    public AppDataSourceNetworkImpl(Context context, SharedPreferences sharedPreferences) {
 
-        this.appDataService = appDataService;
-        this.appAnalyticsDataService = appAnalyticsDataService;
         this.sharedPreferences = sharedPreferences;
+
+        retrofitHTTP = new ServiceUtil().retrofitProductionHTTP(context);
+        retrofitFUUIDS = new ServiceUtil().retrofitFUUIDS(context);
+        retrofitFAS = new ServiceUtil().retrofitFAS(context);
+        retrofitIP = new ServiceUtil().retrofitIP(context);
+
+        appDataServiceHTTP = retrofitHTTP.create(AppDataService.class);
+        appDataServiceFUUIDS = retrofitFUUIDS.create(AppDataService.class);
+        appDataServiceFAS = retrofitFAS.create(AppDataService.class);
+        appDataServiceIP = retrofitIP.create(AppDataService.class);
     }
 
     @Override
     public Observable<Response<Void>> getSessionToken() {
 
-        return appDataService.getSessionToken(AnalyticsAppConstants.authToken);
+        return appDataServiceHTTP.getSessionToken(AnalyticsAppConstants.authToken);
     }
 
     @Override
@@ -116,22 +128,22 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
 
     @Override
     public Observable<String> getUUID() {
-        return appAnalyticsDataService.getUUID();
+        return appDataServiceFUUIDS.getUUID();
     }
 
     @Override
     public Observable<String> getDeviceType() {
-        return appAnalyticsDataService.getDeviceType();
+        return appDataServiceFUUIDS.getDeviceType();
     }
 
     @Override
     public Observable<String> getTrackingSessionID() {
-        return appAnalyticsDataService.getTrackingSessionID();
+        return appDataServiceFUUIDS.getTrackingSessionID();
     }
 
     @Override
     public Observable<String> getSubSessionID() {
-        return appAnalyticsDataService.getSubSessionID();
+        return appDataServiceFUUIDS.getSubSessionID();
     }
 
     @Override
@@ -159,7 +171,7 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
 
     @Override
     public Observable<String> getIPAddress() {
-        return appAnalyticsDataService.getIPAddress();
+        return appDataServiceIP.getIPAddress();
     }
 
     @Override
@@ -184,7 +196,7 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse(ApiConstants.ACCEPT_TYPE_FORMAT_JSON + ";" + ApiConstants.CHARSET), new Gson().toJson(analyticEvent));
         Log.i(TAG, TAG + body.toString());
-        return appAnalyticsDataService.postAnalyticEvent(body);
+        return appDataServiceFAS.postAnalyticEvent(body);
     }
 
 }
