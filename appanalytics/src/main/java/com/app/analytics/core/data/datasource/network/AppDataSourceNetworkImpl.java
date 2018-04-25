@@ -183,7 +183,7 @@ public class AppDataSourceNetworkImpl implements AppDataSource {
             analyticEvent.Referral_code = "-1";
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse(ApiConstants.ACCEPT_TYPE_FORMAT_JSON + ";" + ApiConstants.CHARSET), new Gson().toJson(analyticEvent));
-
+        Log.i(TAG, TAG + body.toString());
         return appAnalyticsDataService.postAnalyticEvent(body);
     }
 

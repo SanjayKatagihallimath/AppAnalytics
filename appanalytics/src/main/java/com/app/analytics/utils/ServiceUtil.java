@@ -31,13 +31,13 @@ public class ServiceUtil {
 
     }
 
-    public Retrofit retrofitFUUIDS(Context context) {
+    public Retrofit retrofitFAS(Context context) {
 
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(gson()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient(context))
-                .baseUrl(ApiConstants.BASE_FUUIDS_URL)
+                .baseUrl(ApiConstants.BASE_FABRIC_FAS_BASE_URL)
                 .build();
 
     }

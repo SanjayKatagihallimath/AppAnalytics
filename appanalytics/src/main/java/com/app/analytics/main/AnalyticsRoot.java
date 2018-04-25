@@ -47,7 +47,7 @@ public class AnalyticsRoot implements AnalyticsInfo {
         this.sharedPreferencesEditor = sharedPreferences.edit();
 
         retrofit = new ServiceUtil().retrofitProductionHTTP(context);
-        retrofitAnalytics = new ServiceUtil().retrofitFUUIDS(context);
+        retrofitAnalytics = new ServiceUtil().retrofitFAS(context);
 
         appDataService = retrofit.create(AppDataService.class);
         appAnalyticsDataService = retrofitAnalytics.create(AppDataService.class);
